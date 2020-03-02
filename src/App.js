@@ -2,12 +2,13 @@ import React from 'react';
 import './App.css';
 import FactMenu from './FactMenu';
 import { getFacts } from './facts';
+import ExamContainer from './ExamContainer';
 
 function App() {
   const [selectedFacts, setSelectedFacts] = React.useState([]);
-  const facts = selectedFacts.map(getFacts);
+  const facts = selectedFacts.map(getFacts).reduce((all, current) => all.concat(current), []);
 
-  return <div className="App">{facts.length ? <div>Fact Test</div> : <FactMenu onSelect={setSelectedFacts} />} </div>;
+  return <div className="App">{facts.length ? <ExamContainer facts={facts} /> : <FactMenu onSelect={setSelectedFacts} />} </div>;
 }
 
 export default App;
