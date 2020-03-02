@@ -1,3 +1,8 @@
 import range from 'lodash/range';
 
-export const getFacts = number => range(10).map(i => ({ addends: [number, i], answer: number + i }));
+export const getFacts = number =>
+  range(10).map(i => ({
+    addends: [number, i],
+    answer: number + i,
+    expression: `${number} + ${i}`,
+  }));

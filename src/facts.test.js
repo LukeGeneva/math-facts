@@ -10,5 +10,6 @@ test('facts are presented as objects', () => {
   facts.forEach(fact => {
     const [a, b] = fact.addends;
     expect(fact.answer).toBe(a + b);
+    expect(fact.expression).toBe(`${a} + ${b}`);
   });
 });
