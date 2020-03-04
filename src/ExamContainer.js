@@ -12,12 +12,57 @@ function ExamContainer({ facts }) {
     inputRef.current.focus();
   }, [factIndex]);
 
+  const checkAnswer = React.useCallback(
+    number => {
+      if (number === fact.answer.toString()) {
+        setFactIndex(factIndex + 1);
+        setAnswer('');
+      }
+    },
+    [setAnswer, setFactIndex, factIndex, fact]
+  );
+
   React.useEffect(() => {
-    if (answer === fact.answer.toString()) {
-      setFactIndex(factIndex + 1);
-      setAnswer('');
-    }
-  }, [answer, fact, factIndex]);
+    checkAnswer(answer);
+  }, [checkAnswer, answer]);
+
+  React.useEffect(() => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechGrammarList =
+      window.SpeechGrammarList || window.webkitSpeechGrammarList;
+
+    const numbers = facts.map(fact => fact.answer.toString());
+    const grammar =
+      '#JSGF V1.0; grammar numbers; public <number> = ' +
+      numbers.join(' | ') +
+      ' ;';
+
+    const recognition = new SpeechRecognition();
+    const speechRecognitionList = new SpeechGrammarList();
+    speechRecognitionList.addFromString(grammar, 1);
+    recognition.grammars = speechRecognitionList;
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.start();
+    recognition.onresult = event => {
+      const result = event.results[
+        event.results.length - 1
+      ][0].transcript.toString();
+      numbers.includes(result) && checkAnswer(result);
+    };
+
+    recognition.onnomatch = () => {
+      console.log('Unrecognized');
+    };
+
+    recognition.onerror = event => {
+      console.log(event.error);
+    };
+
+    return () => recognition.stop();
+  });
 
   const handleAnswerChange = e => setAnswer(e.target.value);
 
@@ -25,7 +70,12 @@ function ExamContainer({ facts }) {
     <div>
       <div>{fact.expression}</div>
       <div>
-        <input ref={inputRef} type="text" onChange={handleAnswerChange} value={answer} />
+        <input
+          ref={inputRef}
+          type="text"
+          onChange={handleAnswerChange}
+          value={answer}
+        />
       </div>
     </div>
   );
