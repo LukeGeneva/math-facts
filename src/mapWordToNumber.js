@@ -1,5 +1,6 @@
 const map = {
   one: 1,
+  on: 1,
   won: 1,
   two: 2,
   to: 2,
@@ -8,6 +9,7 @@ const map = {
   four: 4,
   for: 4,
   five: 5,
+  fine: 5,
   six: 6,
   sex: 6,
   set: 6,
