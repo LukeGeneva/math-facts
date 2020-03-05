@@ -1,5 +1,6 @@
 import React from 'react';
 import shuffle from 'lodash/shuffle';
+import mapWordToNumber from './mapWordToNumber';
 
 function ExamContainer({ facts }) {
   const [factLineup] = React.useState(shuffle(facts));
@@ -47,9 +48,10 @@ function ExamContainer({ facts }) {
 
     recognition.start();
     recognition.onresult = event => {
-      const result = event.results[
-        event.results.length - 1
-      ][0].transcript.toString();
+      const result = mapWordToNumber(
+        event.results[event.results.length - 1][0].transcript.toString().trim()
+      ).toString();
+      console.log(result);
       numbers.includes(result) && checkAnswer(result);
     };
 
