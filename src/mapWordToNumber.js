@@ -8,6 +8,7 @@ const map = {
   three: 3,
   four: 4,
   for: 4,
+  poor: 4,
   five: 5,
   fine: 5,
   six: 6,
