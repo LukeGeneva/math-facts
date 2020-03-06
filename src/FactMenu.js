@@ -15,7 +15,9 @@ function FactMenu({ onSelect }) {
             </li>
           ))}
           <li>
-            <button className="button is-large is-primary">Mixed Facts</button>
+            <button className="button is-large is-primary" onClick={() => onSelect(range(10))}>
+              Mixed Facts
+            </button>
           </li>
         </ul>
       </div>
