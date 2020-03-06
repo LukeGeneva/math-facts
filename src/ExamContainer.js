@@ -1,11 +1,12 @@
 import React from 'react';
 import shuffle from 'lodash/shuffle';
-import mapWordToNumber from './mapWordToNumber';
+import { SpeechNumberContext } from './SpeechNumberProvider';
 
 function ExamContainer({ facts }) {
   const [factLineup] = React.useState(shuffle(facts));
   const [factIndex, setFactIndex] = React.useState(0);
   const [answer, setAnswer] = React.useState('');
+  const { subscribe } = React.useContext(SpeechNumberContext);
   const fact = factLineup[factIndex];
   const inputRef = React.useRef();
 
@@ -15,7 +16,7 @@ function ExamContainer({ facts }) {
 
   const checkAnswer = React.useCallback(
     number => {
-      if (number === fact.answer.toString()) {
+      if (number.toString() === fact.answer.toString()) {
         setFactIndex(factIndex + 1);
         setAnswer('');
       }
@@ -28,35 +29,9 @@ function ExamContainer({ facts }) {
   }, [checkAnswer, answer]);
 
   React.useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
-
-    const numbers = facts.map(fact => fact.answer.toString());
-    const grammar = '#JSGF V1.0; grammar numbers; public <number> = ' + numbers.join(' | ') + ' ;';
-
-    const recognition = new SpeechRecognition();
-    const speechRecognitionList = new SpeechGrammarList();
-    speechRecognitionList.addFromString(grammar, 1);
-    recognition.grammars = speechRecognitionList;
-    recognition.continuous = true;
-    recognition.interimResults = true;
-
-    recognition.start();
-    recognition.onresult = event => {
-      const result = mapWordToNumber(event.results[event.results.length - 1][0].transcript.toString().trim()).toString();
-      console.log(result);
-      numbers.includes(result) && checkAnswer(result);
-    };
-
-    recognition.onnomatch = () => {
-      console.log('Unrecognized');
-    };
-
-    recognition.onerror = event => {
-      console.log(event.error);
-    };
-
-    return () => recognition.stop();
+    const unsubscribe = subscribe(word => checkAnswer(word));
+    console.log('subscribed');
+    return unsubscribe;
   });
 
   const handleAnswerChange = e => setAnswer(e.target.value);
@@ -65,9 +40,18 @@ function ExamContainer({ facts }) {
     <div>
       <div>{fact.expression}</div>
       <section className="section">
-        <input ref={inputRef} type="text" onChange={handleAnswerChange} value={answer} />
+        <input
+          ref={inputRef}
+          type="text"
+          onChange={handleAnswerChange}
+          value={answer}
+        />
       </section>
-      <progress class="progress is-primary" value={factIndex} max={facts.length}></progress>
+      <progress
+        className="progress is-primary"
+        value={factIndex}
+        max={facts.length}
+      ></progress>
     </div>
   );
 }
