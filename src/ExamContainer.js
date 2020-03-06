@@ -28,16 +28,11 @@ function ExamContainer({ facts }) {
   }, [checkAnswer, answer]);
 
   React.useEffect(() => {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-    const SpeechGrammarList =
-      window.SpeechGrammarList || window.webkitSpeechGrammarList;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
 
     const numbers = facts.map(fact => fact.answer.toString());
-    const grammar =
-      '#JSGF V1.0; grammar numbers; public <number> = ' +
-      numbers.join(' | ') +
-      ' ;';
+    const grammar = '#JSGF V1.0; grammar numbers; public <number> = ' + numbers.join(' | ') + ' ;';
 
     const recognition = new SpeechRecognition();
     const speechRecognitionList = new SpeechGrammarList();
@@ -48,9 +43,7 @@ function ExamContainer({ facts }) {
 
     recognition.start();
     recognition.onresult = event => {
-      const result = mapWordToNumber(
-        event.results[event.results.length - 1][0].transcript.toString().trim()
-      ).toString();
+      const result = mapWordToNumber(event.results[event.results.length - 1][0].transcript.toString().trim()).toString();
       console.log(result);
       numbers.includes(result) && checkAnswer(result);
     };
@@ -71,14 +64,10 @@ function ExamContainer({ facts }) {
   return (
     <div>
       <div>{fact.expression}</div>
-      <div>
-        <input
-          ref={inputRef}
-          type="text"
-          onChange={handleAnswerChange}
-          value={answer}
-        />
-      </div>
+      <section className="section">
+        <input ref={inputRef} type="text" onChange={handleAnswerChange} value={answer} />
+      </section>
+      <progress class="progress is-primary" value={factIndex} max={facts.length}></progress>
     </div>
   );
 }
