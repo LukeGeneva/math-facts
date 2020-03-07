@@ -1,12 +1,11 @@
 import React from 'react';
 import shuffle from 'lodash/shuffle';
-import { SpeechNumberContext } from './SpeechNumberProvider';
+import NumberListener from './NumberListener';
 
 function ExamContainer({ facts }) {
   const [factLineup] = React.useState(shuffle(facts));
   const [factIndex, setFactIndex] = React.useState(0);
   const [answer, setAnswer] = React.useState('');
-  const { subscribe } = React.useContext(SpeechNumberContext);
   const fact = factLineup[factIndex];
   const inputRef = React.useRef();
 
@@ -14,24 +13,9 @@ function ExamContainer({ facts }) {
     inputRef.current.focus();
   }, [factIndex]);
 
-  const checkAnswer = React.useCallback(
-    number => {
-      if (number.toString() === fact.answer.toString()) {
-        setFactIndex(factIndex + 1);
-        setAnswer('');
-      }
-    },
-    [setAnswer, setFactIndex, factIndex, fact]
-  );
-
   React.useEffect(() => {
-    checkAnswer(answer);
-  }, [checkAnswer, answer]);
-
-  React.useEffect(() => {
-    const unsubscribe = subscribe(word => checkAnswer(word));
-    console.log('subscribed');
-    return unsubscribe;
+    const listener = new NumberListener(fact.answer);
+    listener.listen(() => setFactIndex(factIndex + 1));
   });
 
   const handleAnswerChange = e => setAnswer(e.target.value);
