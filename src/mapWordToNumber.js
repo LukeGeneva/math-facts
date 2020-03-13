@@ -29,6 +29,7 @@ const map = {
   ten: 10,
   tin: 10,
   and: 10,
+  pain: 10,
 };
 
 const mapWordToNumber = word => map[word.toLowerCase()] || word;
