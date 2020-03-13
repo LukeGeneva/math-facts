@@ -14,9 +14,15 @@ function ExamContainer({ facts }) {
   }, [factIndex]);
 
   React.useEffect(() => {
-    const listener = new NumberListener(fact.answer);
-    listener.listen(() => setFactIndex(factIndex + 1));
+    NumberListener.listen(
+      n => n === fact.answer && setFactIndex(factIndex + 1)
+    );
   });
+
+  React.useEffect(() => {
+    NumberListener.start();
+    return NumberListener.stop;
+  }, []);
 
   const handleAnswerChange = e => setAnswer(e.target.value);
 
